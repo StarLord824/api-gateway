@@ -62,18 +62,23 @@ docker-compose up --build -d
 
 ### 4️⃣ Access the Services
 Frontend: http://localhost:5173
+
 REST API: http://localhost:5000
+
 GraphQL API: http://localhost:6000/graphql
+
 PostgreSQL (DB): localhost:5432
+
 Redis (Cache): localhost:6379
-📌 Testing the APIs
-🔹 Test REST API (CRUD)
+
+## 📌 Testing the APIs
+### 🔹 Test REST API (CRUD)
 Bash
 ```
 curl -X POST "http://localhost:5000/register" -H "Content-Type: application/json" -d '{"name": "Alice", "email": "alice@example.com", "password": "securepass"}'
 ```
 
-##🔹 Test GraphQL API
+### 🔹 Test GraphQL API
 Visit http://localhost:6000/graphql and run this query:
 ```
 GraphQL
