@@ -1,0 +1,26 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "A full-stack API Gateway project integrating REST API, GraphQL API, PostgreSQL, and Redis, with a React frontend. Designed to showcase API architecture, microservices, and performance optimization in interviews.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "build": "tsc -b",
+    "dev": "npm run build && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StarLord824/api-gateway.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StarLord824/api-gateway/issues"
+  },
+  "homepage": "https://github.com/StarLord824/api-gateway#readme",
+  "dependencies": {
+    "prisma": "^6.9.0"
+  }
+}
