@@ -1,19 +1,19 @@
-const express = require("express");
-const { Pool } = require("pg");
-const Redis = require("redis");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+import express, { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "../../generated/prisma";
 
+dotenv.config();
 const app = express();
+
 app.use(express.json());
 
-const pool = new Pool({ connectionString: process.env.PG_URI });
-const redisClient = Redis.createClient({ url: process.env.REDIS_URI });
-redisClient.connect();
+const prisma = new PrismaClient();
 
 const SECRET_KEY = "your_secret_key";
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
@@ -25,23 +25,24 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-app.post("/register", async (req, res) => {
+app.post("/register", async (req : Request, res : Response) => {
   const { name, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-  const result = await pool.query(
-    "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-    [name, email, hashedPassword]
-  );
-  const user = result.rows[0];
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword
+    }
+  });
 
   const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
   res.json({ token, user });
 });
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-  const user = result.rows[0];
+  const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(400).json({ error: "Invalid credentials" });

@@ -1,9 +1,9 @@
-const { ApolloServer, gql } = require("apollo-server-express");
-const express = require("express");
-const { Pool } = require("pg");
-const Redis = require("redis");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+import { ApolloServer, gql } from "apollo-server-express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "../../generated/prisma";
+import express from "express";
 
 const app = express();
 const pool = new Pool({ connectionString: process.env.PG_URI });
