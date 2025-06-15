@@ -23,13 +23,56 @@ A full-stack API Gateway project integrating REST API, GraphQL API, PostgreSQL, 
 ## 📌 Project Structure
 
 ```bash
-api-gateway/
-├── frontend/         # React App (Netlify Deployable)
-├── rest-api/         # Express REST API
-├── graphql-api/      # GraphQL API
-├── docker-compose.yml # Containerized Setup
-├── .env              # Environment Configurations
-├── README.md         # Documentation
+/api-gateway
+│
+├── /src
+│   ├── server.ts                  # Main entry point: initializes and runs both REST + GraphQL servers
+│   ├── config.ts                  # Global config (env, rate limits, CORS, secrets, etc.)
+│   │
+│   ├── /common                    # Shared logic used by both APIs
+│   │   ├── db.ts                  # DB connection (Postgres, Mongo, etc.)
+│   │   ├── logger.ts              # Winston or Pino logger instance
+│   │   ├── auth.ts                # JWT/OAuth verification middleware
+│   │   ├── rateLimiter.ts         # Redis/in-memory rate limiter logic
+│   │   ├── cache.ts               # Redis or LRU-based cache instance
+│   │   ├── types.ts               # Shared TypeScript types/interfaces
+│   │   ├── errorHandler.ts        # Unified error formatting/handling logic
+│   │   └── metrics.ts             # Prometheus metrics collector
+│   │
+│   ├── /services                  # Business logic layer, independent of REST/GraphQL
+│   │   └── userService.ts         # User CRUD + Auth logic used by both APIs
+│   │
+│   ├── /rest                      # REST API setup
+│   │   ├── index.ts               # Creates and exports the REST app
+│   │   ├── router.ts              # Express Router setup
+│   │   ├── controllers/
+│   │   │   └── userController.ts  # Route handlers that call service logic
+│   │   └── middlewares/
+│   │       ├── validate.ts        # Request body/param validators
+│   │       └── logging.ts         # Logs each request
+│   │
+│   ├── /graphql                   # GraphQL API setup
+│   │   ├── index.ts               # Sets up Apollo Server (or Mercurius, etc.)
+│   │   ├── schema.ts              # TypeDefs + resolvers stitched together
+│   │   ├── resolvers/
+│   │   │   └── userResolver.ts    # Maps GQL fields to service logic
+│   │   ├── typeDefs/
+│   │   │   └── user.graphql       # GraphQL schema for users
+│   │   └── context.ts             # Shared context for resolvers (auth, user info, db)
+│   │
+│   └── /utils                     # Misc helpers (date, string manipulation, etc.)
+│       └── timeUtils.ts
+│
+├── /scripts                       # DB seeding, cleanup, migration scripts
+│   └── seed.ts
+│
+├── .env                           # Environment variables
+├── .env.example                   # Sample env template
+├── tsconfig.json                  # TypeScript config
+├── package.json
+├── README.md
+└── docker-compose.yml            # (Optional) Redis, DB, gateway container
+
 ```
 ## 📌 Installation & Running Locally
 

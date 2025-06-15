@@ -1,39 +1,38 @@
 version: '3.8'
+
 services:
-  postgres:
-    image: postgres
+  gateway:
+    build: .
+    ports:
+      - "3000:3000"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      - NODE_ENV=development
+      - PORT=3000
+      - JWT_SECRET=your_jwt_secret
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/gateway?schema=public
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gateway
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
-    image: redis
+    image: redis:6
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
-  rest-api:
-    build: ./rest-api
-    ports:
-      - "5000:5000"
-    depends_on:
-      - postgres
-      - redis
-
-  graphql-api:
-    build: ./graphql-api
-    ports:
-      - "6000:6000"
-    depends_on:
-      - postgres
-      - redis
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - rest-api
-      - graphql-api
+volumes:
+  postgres_data:
+  redis_data:
