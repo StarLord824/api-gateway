@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../../common/errorHandler';
 import logger from '../../common/logger';
+import Joi from 'joi';
 
 export function validateRequest(schema: any) {
   return (req: Request, res: Response, next: NextFunction) => {

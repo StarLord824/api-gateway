@@ -2,6 +2,7 @@ import { RateLimiterRedis } from 'rate-limiter-flexible';
 import Redis from 'ioredis';
 import config from '../config';
 import logger from './logger';
+import { Request, Response, NextFunction } from 'express';
 
 const redisClient = new Redis(config.redisUrl);
 
@@ -25,7 +26,7 @@ const graphqlRateLimiter = new RateLimiterRedis({
 
 export async function restRateLimit(req: Request, res: Response, next: NextFunction) {
   try {
-    await restRateLimiter.consume(req.ip);
+    await restRateLimiter.consume(req.ip || 'unknown');
     next();
   } catch (err) {
     res.status(429).json({ error: 'Too many requests' });

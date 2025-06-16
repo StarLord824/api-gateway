@@ -40,7 +40,7 @@ export function errorHandler(
 
   const response: ApiResponse<null> = {
     success: false,
-    error: message
+    error: { message }
   };
 
   res.status(statusCode).json(response);

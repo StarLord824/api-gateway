@@ -1,7 +1,5 @@
 import express from 'express';
 import { createServer } from 'http';
-import { ApolloServer } from 'apollo-server-express';
-import restApp from './rest';
 import graphqlServer from './graphql';
 import config from './config';
 import { initMetrics } from './common/metrics';
@@ -18,10 +16,7 @@ async function startServer() {
   // Apply common middlewares
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  // Initialize REST API
-  app.use('/api', restApp);
-  logger.info('REST API initialized');
+;
 
   // Initialize GraphQL API
   await graphqlServer.start();

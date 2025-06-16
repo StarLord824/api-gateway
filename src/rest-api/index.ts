@@ -1,9 +1,11 @@
 import express from 'express';
-import { authenticateJWT, restRateLimit } from '../common/auth';
+import { Request, Response, NextFunction } from 'express';
+import { authenticateJWT} from '../common/auth';
+import { restRateLimit } from '../common/rateLimiter';
 import { initCache } from '../common/cache';
 import logger from '../common/logger';
-import userController from './controllers/userController';
-import { validateRequest } from './middlewares/validate';
+import {getAllUsers, createUser, getUserById} from './controllers/userController';
+import { userSchema, validateRequest } from './middlewares/validate';
 
 const app = express();
 
@@ -16,9 +18,9 @@ app.use(express.json());
 initCache();
 
 // Routes
-app.get('/users', userController.getAllUsers);
-app.post('/users', validateRequest, userController.createUser);
-app.get('/users/:id', userController.getUserById);
+app.get('/users', getAllUsers);
+app.post('/users', validateRequest(userSchema), createUser);
+app.get('/users/:id', getUserById);
 
 // Error handling
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

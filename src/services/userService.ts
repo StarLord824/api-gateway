@@ -1,14 +1,13 @@
 import { prisma } from '../common/db';
 import logger from '../common/logger';
 import { ApiError } from '../common/errorHandler';
-import { JwtUser } from '../common/types';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 
 const SALT_ROUNDS = 10;
 
-export async function createUser(email: string, password: string) {
+export async function createsUser(email: string, password: string) {
   try {
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await prisma.user.create({
@@ -36,7 +35,7 @@ export async function authenticateUser(email: string, password: string) {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: user.id, email: user.email },
     config.jwtSecret,
     { expiresIn: '1h' }
   );
@@ -44,13 +43,12 @@ export async function authenticateUser(email: string, password: string) {
   return token;
 }
 
-export async function getUserById(id: string) {
+export async function getsUserById(id: string) {
   const user = await prisma.user.findUnique({
     where: { id },
     select: {
       id: true,
       email: true,
-      role: true,
       createdAt: true
     }
   });

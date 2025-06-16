@@ -9,18 +9,21 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   
   if (!authHeader) {
     logger.warn('No authorization header provided');
-    return res.status(401).json({ error: 'Unauthorized' });
+    res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader?.split(' ')[1];
   
   try {
+    if (!token) {
+      throw new Error('Invalid token');
+    }
     const user = jwt.verify(token, config.jwtSecret);
     (req as any).user = user;
     next();
   } catch (err) {
     logger.error('JWT verification failed:', err);
-    return res.status(403).json({ error: 'Forbidden' });
+    res.status(403).json({ error: 'Forbidden' });
   }
 }
 
