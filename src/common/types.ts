@@ -5,6 +5,10 @@ import Redis from 'ioredis';
 /**
  * Core API Response Type
  */
+export interface JwtUser {
+  id: string;
+  email: string;
+}
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;

@@ -1,0 +1,31 @@
+type User {
+  id: ID!
+  email: String!
+  role: Role!
+  createdAt: DateTime!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+extend type Query {
+  me: User! @auth(requires: [USER])
+  user(id: ID!): User @auth(requires: [ADMIN])
+}
+
+extend type Mutation {
+  createUser(input: CreateUserInput!): User!
+  login(input: LoginInput!): AuthPayload!
+}

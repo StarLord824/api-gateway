@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
-import graphqlServer from './graphql';
+import restApp from './rest-api/rest';
+import { createApolloServer } from './graphql';
 import config from './config';
 import { initMetrics } from './common/metrics';
 import logger from './common/logger';
@@ -16,11 +17,14 @@ async function startServer() {
   // Apply common middlewares
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-;
+
+  // Initialize REST API
+  app.use('/api', restApp);
+  logger.info('REST API initialized');
 
   // Initialize GraphQL API
-  await graphqlServer.start();
-  graphqlServer.applyMiddleware({ app, path: '/graphql' });
+  const graphqlMiddleware = await createApolloServer(httpServer);
+  app.use('/graphql', graphqlMiddleware);
   logger.info('GraphQL API initialized');
 
   // Health check endpoint

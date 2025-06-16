@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import { GraphQLContext } from '../graphql/context';
 import logger from './logger';
+import { JwtUser } from './types';
 
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
@@ -32,10 +33,10 @@ export function createGraphQLContext({ req }: { req: Request }): GraphQLContext 
   const token = authHeader.split(' ')[1] || '';
   
   try {
-    const user = token ? jwt.verify(token, config.jwtSecret) : null;
+    const user = token ? jwt.verify(token, config.jwtSecret) as JwtUser : undefined;
     return { user };
   } catch (err) {
     logger.error('GraphQL context creation failed:', err);
-    return { user: null };
+    return { user: undefined };
   }
 }
